@@ -7,6 +7,7 @@ package controller.student;
 
 import controller.authentication.BaseRequiredAuthController;
 import dal.ClassificationDBContext;
+import dal.RoomDBContext;
 import dal.StudentDBContext;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,7 +18,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Classification;
+import model.Room;
 import model.Student;
+import model.Student_Room;
 
 /**
  *
@@ -42,7 +45,7 @@ public class InsertController extends BaseRequiredAuthController {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet InsertController</title>");            
+            out.println("<title>Servlet InsertController</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet InsertController at " + request.getContextPath() + "</h1>");
@@ -63,14 +66,14 @@ public class InsertController extends BaseRequiredAuthController {
     @Override
     protected void processGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         ClassificationDBContext csDB = new ClassificationDBContext();
         ArrayList<Classification> classifications = csDB.getClassifications();
         request.setAttribute("classifications", classifications);
 
-//        CertificateDBContext cDB = new CertificateDBContext();
-//         ArrayList<Certificate> certs = cDB.getCerts();
-//         request.setAttribute("certs", certs);
+        RoomDBContext rDB = new RoomDBContext();
+        ArrayList<Room> rooms = rDB.getRooms();
+        request.setAttribute("rooms", rooms);
 
         request.getRequestDispatcher("../view/insert.jsp").forward(request, response);
     }
@@ -92,11 +95,23 @@ public class InsertController extends BaseRequiredAuthController {
         s.setUser_name(request.getParameter("user_name"));
         s.setGender(request.getParameter("gender").equals("male"));
         s.setDob(Date.valueOf(request.getParameter("dob")));
-        
+
         Classification c = new Classification();
         c.setId(Integer.parseInt(request.getParameter("cid")));
         s.setClassi(c);
-        
+
+        String[] rids = request.getParameterValues("rid");
+        if (rids != null) {
+            for (String rid : rids) {
+                Student_Room sr = new Student_Room();
+                sr.setStudent(s);
+                Room r = new Room();
+                r.setId(Integer.parseInt(rid));
+                sr.setRoom(r);
+                s.getRooms().add(sr);
+            }
+        }
+
         StudentDBContext db = new StudentDBContext();
         db.insert(s);
         response.sendRedirect("list");

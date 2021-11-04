@@ -38,6 +38,13 @@
                 </c:forEach>
             </select>
             <br/>
+            Room <br/><c:forEach items="${requestScope.rooms}" var="r">
+                <input name="rid"
+                       <c:forEach items="${requestScope.student.rooms}" var="sr">
+                           ${(sr.room.id eq r.id) ? "checked=\"checked\"" : ""}
+                       </c:forEach>
+                       type="checkbox" value="${r.id}"/> ${r.name} <br/>
+            </c:forEach>
             <input type="submit" value="Save"/>
         </form>
     </body>

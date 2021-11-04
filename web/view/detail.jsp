@@ -22,7 +22,10 @@
         Dob:<fmt:formatDate type = "date" value = "${requestScope.student.dob}" />  <br/>
         Gender: ${requestScope.student.gender?"Male":"Female"} <br/>
         Classification: ${requestScope.student.classi.name} <br/>
-        Class: 
+        Room: <br/>
+        <c:forEach items="${requestScope.student.rooms}" var="sr">
+            ${sr.room.name} <br/>
+        </c:forEach>
 
     </body>
     </body>

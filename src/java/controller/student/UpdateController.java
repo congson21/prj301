@@ -7,6 +7,7 @@ package controller.student;
 
 import controller.authentication.BaseRequiredAuthController;
 import dal.ClassificationDBContext;
+import dal.RoomDBContext;
 import dal.StudentDBContext;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,7 +18,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Classification;
+import model.Room;
 import model.Student;
+import model.Student_Room;
 
 /**
  *
@@ -73,6 +76,10 @@ public class UpdateController extends BaseRequiredAuthController {
         ArrayList<Classification> classifications = classification_db.getClassifications();
         request.setAttribute("classifications", classifications);
         
+        RoomDBContext room_db = new RoomDBContext();
+        ArrayList<Room> rooms = room_db.getRooms();
+        request.setAttribute("rooms", rooms);
+        
         request.getRequestDispatcher("../view/update.jsp").forward(request, response);
     }
 
@@ -98,6 +105,18 @@ public class UpdateController extends BaseRequiredAuthController {
         Classification c = new Classification();
         c.setId(Integer.parseInt(request.getParameter("cid")));
         s.setClassi(c);
+        
+        String[] rids = request.getParameterValues("rid");
+        if (rids != null) {
+            for (String rid : rids) {
+                Student_Room sr = new Student_Room();
+                sr.setStudent(s);
+                Room r = new Room();
+                r.setId(Integer.parseInt(rid));
+                sr.setRoom(r);
+                s.getRooms().add(sr);
+            }
+        }
         
         StudentDBContext db = new StudentDBContext();
         db.update(s);

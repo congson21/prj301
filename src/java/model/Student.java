@@ -18,7 +18,18 @@ public class Student {
     private Date dob;
     private boolean gender;
     private Classification classi;
+    private ArrayList<Student_Room> rooms = new ArrayList<>();
 
+    public ArrayList<Student_Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(ArrayList<Student_Room> rooms) {
+        this.rooms = rooms;
+    }
+
+    
+    
     public int getId() {
         return id;
     }

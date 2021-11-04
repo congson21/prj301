@@ -32,7 +32,9 @@
                 </c:forEach>
             </select>
             <br/>
-            
+            <c:forEach items="${requestScope.rooms}" var="r">
+                <input name="rid" type="checkbox" value="${r.id}"/> ${r.name}
+                </c:forEach><br/>           
             <input type="submit" value="Save"/>
         </form>
     </body>
