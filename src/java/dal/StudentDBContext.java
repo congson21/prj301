@@ -324,9 +324,9 @@ public class StudentDBContext extends DBContext {
             while (rs.next()) {
                 Student s = new Student();
                 s.setId(rs.getInt("id"));
-                s.setName(rs.getString("student_code"));
+                s.setStudent_code(rs.getString("student_code"));
                 s.setName(rs.getString("name"));
-                s.setName(rs.getString("user_name"));
+                s.setUser_name(rs.getString("user_name"));
                 s.setDob(rs.getDate("dob"));
                 s.setGender(rs.getBoolean("gender"));
 
