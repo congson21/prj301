@@ -5,10 +5,13 @@
  */
 package dal;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Student;
@@ -63,7 +66,7 @@ public class StudentDBContext extends DBContext {
                     + "WHERE s.id = ?";
             PreparedStatement stm = connection.prepareStatement(sql);
             stm.setInt(1, id);
-            ResultSet rs = stm.executeQuery(); //thuc hien cac cau query truy van //rs la 1 con tro, doc tung row tung row
+            ResultSet rs = stm.executeQuery(); //thuc hien cac cau query truy van //rs la 1 con tro, doc tung row
             Student s = null;
             while (rs.next()) {
                 if (s == null) {
@@ -159,7 +162,7 @@ public class StudentDBContext extends DBContext {
 
     public void update(Student s) {
         try {
-             connection.setAutoCommit(false);
+            connection.setAutoCommit(false);
             String sql = "UPDATE [Student]\n"
                     + "   SET [student_code] = ?\n"
                     + "      ,[name] = ?\n"
@@ -177,12 +180,12 @@ public class StudentDBContext extends DBContext {
             stm.setInt(6, s.getClassi().getId());
             stm.setInt(7, s.getId());
             stm.executeUpdate();
-            
+
             String sql_remove_rooms = "DELETE Student_Room WHERE sid = ?";
             PreparedStatement stm_remove_rooms = connection.prepareStatement(sql_remove_rooms);
             stm_remove_rooms.setInt(1, s.getId());
             stm_remove_rooms.executeUpdate();
-            
+
             for (Student_Room room : s.getRooms()) {
                 String sql_insert_room = "INSERT INTO [Student_Room]\n"
                         + "           ([sid]\n"
@@ -195,7 +198,7 @@ public class StudentDBContext extends DBContext {
                 stm_insert_room.setInt(2, room.getRoom().getId());
                 stm_insert_room.executeUpdate();
             }
-            
+
             connection.commit();
         } catch (SQLException ex) {
             Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
@@ -204,7 +207,7 @@ public class StudentDBContext extends DBContext {
             } catch (SQLException ex1) {
                 Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex1);
             }
-        }finally{
+        } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException ex) {
@@ -222,5 +225,121 @@ public class StudentDBContext extends DBContext {
         } catch (SQLException ex) {
             Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public ArrayList<Student> search(int id, String student_code, String name, String user_name, Boolean gender, Date from, Date to, int cid) {
+        ArrayList<Student> students = new ArrayList<>();
+        try {
+            String sql = "SELECT id,student_code,name,user_name,dob,gender,Classification.cid, cname FROM Student\n" +
+"                    INNER JOIN Classification\n" +
+"                    ON Student.cid = Classification.cid\n" +
+"                    WHERE\n" +
+"                    (1=1)";
+            int paramIndex = 0;
+            HashMap<Integer, Object[]> params = new HashMap<>();
+
+            if (id != - 1) {
+                sql += " AND id = ?";
+                paramIndex++;
+                Object[] param = new Object[2];
+                param[0] = Integer.class.getName();
+                param[1] = id;
+                params.put(paramIndex, param);
+            }
+            if (student_code != null) {
+                sql += " AND student_code like '%' + ? + '%'";
+                paramIndex++;
+                Object[] param = new Object[2];
+                param[0] = String.class.getName();
+                param[1] = student_code;
+                params.put(paramIndex, param);
+            }
+            if (name != null) {
+                sql += " AND name like '%' + ? + '%'";
+                paramIndex++;
+                Object[] param = new Object[2];
+                param[0] = String.class.getName();
+                param[1] = name;
+                params.put(paramIndex, param);
+            }
+            if (user_name != null) {
+                sql += " AND user_name like '%' + ? + '%'";
+                paramIndex++;
+                Object[] param = new Object[2];
+                param[0] = String.class.getName();
+                param[1] = user_name;
+                params.put(paramIndex, param);
+            }
+            if (from != null) {
+                sql += " AND dob >= ?";
+                paramIndex++;
+                Object[] param = new Object[2];
+                param[0] = Date.class.getName();
+                param[1] = from;
+                params.put(paramIndex, param);
+            }
+            if (to != null) {
+                sql += " AND dob <= ?";
+                paramIndex++;
+                Object[] param = new Object[2];
+                param[0] = Date.class.getName();
+                param[1] = to;
+                params.put(paramIndex, param);
+            }
+            if (gender != null) {
+                sql += " AND gender = ?";
+                paramIndex++;
+                Object[] param = new Object[2];
+                param[0] = Boolean.class.getName();
+                param[1] = gender;
+                params.put(paramIndex, param);
+            }
+            if (cid != - 1) {
+                sql += " AND Classification.cid = ?";
+                paramIndex++;
+                Object[] param = new Object[2];
+                param[0] = Integer.class.getName();
+                param[1] = cid;
+                params.put(paramIndex, param);
+            }
+
+            PreparedStatement stm = connection.prepareStatement(sql);
+            for (Map.Entry<Integer, Object[]> entry : params.entrySet()) {
+                Integer index = entry.getKey();
+                Object[] value = entry.getValue();
+                String type = value[0].toString();
+                if (type.equals(Integer.class.getName())) {
+                    stm.setInt(index, (Integer) value[1]);
+                } else if (type.equals(String.class.getName())) {
+                    stm.setString(index, value[1].toString());
+                } else if (type.equals(Date.class.getName())) {
+                    stm.setDate(index, (Date) value[1]);
+                } else if (type.equals(Boolean.class.getName())) {
+                    stm.setBoolean(index, (Boolean) value[1]);
+                }
+
+            }
+
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                Student s = new Student();
+                s.setId(rs.getInt("id"));
+                s.setName(rs.getString("student_code"));
+                s.setName(rs.getString("name"));
+                s.setName(rs.getString("user_name"));
+                s.setDob(rs.getDate("dob"));
+                s.setGender(rs.getBoolean("gender"));
+
+                Classification c = new Classification();
+                c.setId(rs.getInt("cid"));
+                c.setName(rs.getString("cname"));
+                s.setClassi(c);
+                students.add(s);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return students;
     }
 }
