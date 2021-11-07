@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package controller.authentication;
-
 import dal.AccountDBContext;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,19 +30,7 @@ public class LoginController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet LoginController</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet LoginController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+        request.getRequestDispatcher("view/login.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -58,8 +45,7 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("view/login.jsp").forward(request, response);
-        
+        processRequest(request, response);
     }
 
     /**
@@ -77,12 +63,14 @@ public class LoginController extends HttpServlet {
         String pass = request.getParameter("pass");
         AccountDBContext db = new AccountDBContext();
         Account account = db.getAccount(user, pass);
-        if (account != null) {
-            request.getSession().setAttribute("account", account);
-            response.getWriter().println("Login successful!");
-        } else {
+        if (account == null) {
             request.getSession().setAttribute("account", null);
-            response.getWriter().println("Login failed!");
+            response.getWriter().println("login failed!");
+            
+        } else {
+            request.getSession().setAttribute("account", account);
+            response.getWriter().println("login successful!");
+           
         }
     }
 

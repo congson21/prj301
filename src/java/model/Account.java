@@ -5,13 +5,25 @@
  */
 package model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Asus
  */
 public class Account {
+
     private String username;
     private String password;
+    private ArrayList<Feature> features = new ArrayList<>();
+
+    public ArrayList<Feature> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(ArrayList<Feature> features) {
+        this.features = features;
+    }
 
     public String getUsername() {
         return username;
@@ -27,5 +39,5 @@ public class Account {
 
     public void setPassword(String password) {
         this.password = password;
-    }   
+    }
 }
