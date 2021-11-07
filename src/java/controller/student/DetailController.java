@@ -37,7 +37,7 @@ public class DetailController extends HttpServlet {
 
         Student student = db.getStudent(id);
         request.setAttribute("student", student);
-        request.getRequestDispatcher("../view/detail.jsp").forward(request, response);
+        request.getRequestDispatcher("../detail.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

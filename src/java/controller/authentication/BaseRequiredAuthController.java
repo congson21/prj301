@@ -13,50 +13,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Account;
+import model.Feature;
 
 /**
  *
- * @author Asus
+ * @author dell
  */
 public abstract class BaseRequiredAuthController extends HttpServlet {
 
     private boolean isAuthenticated(HttpServletRequest request) {
         Account account = (Account) request.getSession().getAttribute("account");
-//        return account != null;
-        return true;
-    }
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet BaseRequiredAuthController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet BaseRequiredAuthController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        if(account ==null)
+            return false;
+        String url = request.getServletPath();
+        for (Feature feature : account.getFeatures()) {
+            if(feature.getUrl().equals(url))
+            {
+                return true;
+            }
         }
+        return false;
     }
-
-    protected abstract void processGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException;
-
-    protected abstract void processPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException;
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -70,12 +47,20 @@ public abstract class BaseRequiredAuthController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (isAuthenticated(request)) {
+        if(isAuthenticated(request))
+        {
             processGet(request, response);
-        } else {
-            response.getWriter().println("Access denied!");
+        }
+        else
+        {
+            response.getWriter().println("access denied!");
         }
     }
+    
+    protected abstract void processGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException;
+    protected abstract void processPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException;
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -88,10 +73,13 @@ public abstract class BaseRequiredAuthController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (isAuthenticated(request)) {
+        if(isAuthenticated(request))
+        {
             processPost(request, response);
-        } else {
-            response.getWriter().println("Access denied!");
+        }
+        else
+        {
+            response.getWriter().println("access denied!");
         }
     }
 

@@ -35,7 +35,7 @@ public class ListController extends HttpServlet {
         StudentDBContext db = new StudentDBContext();
         ArrayList<Student> students = db.getStudents();
         request.setAttribute("students", students);
-        request.getRequestDispatcher("../view/list.jsp").forward(request, response);
+        request.getRequestDispatcher("../list.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
