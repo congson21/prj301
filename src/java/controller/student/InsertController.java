@@ -56,7 +56,7 @@ public class InsertController extends HttpServlet {
         ArrayList<Room> rooms = rDB.getRooms();
         request.setAttribute("rooms", rooms);
 
-        request.getRequestDispatcher("../view/insert.jsp").forward(request, response);
+        request.getRequestDispatcher("../insert.jsp").forward(request, response);
     }
 
     @Override

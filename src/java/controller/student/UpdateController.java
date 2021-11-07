@@ -45,7 +45,7 @@ public class UpdateController extends HttpServlet {
         ArrayList<Room> rooms = room_db.getRooms();
         request.setAttribute("rooms", rooms);
         
-        request.getRequestDispatcher("../view/update.jsp").forward(request, response);
+        request.getRequestDispatcher("../update.jsp").forward(request, response);
     }
 
     /**

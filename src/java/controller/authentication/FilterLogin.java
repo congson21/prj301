@@ -108,7 +108,7 @@ public class FilterLogin implements Filter {
         if (account != null) {
             chain.doFilter(request, response);
         } else {
-            res.sendRedirect("../login");
+            res.sendRedirect("../login.jsp");
         }
     }
 
